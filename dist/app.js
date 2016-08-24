@@ -1,34 +1,35 @@
-var userEmail ='';
+var userEmail =''; // sets email to an empty string
 
 if (location.hash.indexOf('album') !== -1) {
-  gotoHash();
+  gotoHash(); //will render the ablum or image page
 } else {
-  renderHome();
+  renderHome(); //will render the home page
 }
 
 // localStorage.clear();
 
 $(window).on('hashchange', gotoHash); // Hash change event
 
-function gotoHash() {
-  // console.log('GO TO HASH');
+function gotoHash() { //est a function deciding the url extension
+   //console.log('GO TO HASH');
   var albumHash = location.hash.match(/album=.*?(?=&)/g);
   var imageHash = location.hash.match(/image=.*?(?=&)/g);
-  if (imageHash !== null) {
+  if (imageHash !== null) { //if the image is location is not null, the image of the ablum loads
     albumHash = albumHash[0];
     imageHash = imageHash[0];
     albumIndex = albumHash.split('=')[1];
     imageIndex = imageHash.split('=')[1];
-    renderImage(albumIndex, imageIndex);
-  } else if (albumHash !== null) {
+    renderImage(albumIndex, imageIndex); //calls to the renderImage function defined in this file
+  } else if (albumHash !== null) { //if the image is null, the albums page is rendered
     albumHash = albumHash[0];
     albumIndex = albumHash.split('=')[1];
-    renderAlbum(albumIndex);
+    renderAlbum(albumIndex); //calls to the renderAlbum function defined in this file
   }
 }
 
 
 function renderHome() {
+  //setting variables for the jQuery selectors
   var $modalContainer = $('.modal-container');
   var $loginBtn = $('#email-submit');
   var $emailInput = $('#email-input');
@@ -43,15 +44,16 @@ function renderHome() {
   $albumPage.css('display', 'none'); // Display this page
 
   var $albumsGrid = $('.albums-grid');
-  $albumsGrid.empty();
+  $albumsGrid.empty(); //clears the My Albums page. If a user clicks on a new ablum,
+  //the My Albums the albumsGrid stores another grid container
 
-  if (!sessionStorage.email) {
+  if (!sessionStorage.email) { //if no email is storage the .login is displayed when a page refreshes
     $('.modal').css('display', 'none');
     $modalContainer.css('display', 'flex');
     $('.login').css('display', 'flex');
   }
 
-  $emailInput.on('keyup', function(e){
+  $emailInput.on('keyup', function(e){ //on the keyup handlers changes the Login button color from red to blue
     var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (emailRegex.test($emailInput.val())) {
       $loginBtn.addClass('valid');
@@ -61,40 +63,40 @@ function renderHome() {
   });
 
 
-  $loginBtn.on('click', function(){
+  $loginBtn.on('click', function(){ //click event on the login button
     var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (emailRegex.test($emailInput.val())) {
+    if (emailRegex.test($emailInput.val())) { //if passes...
       // VALID EMAIL
-      userEmail = $emailInput.val();
-      sessionStorage.email = $emailInput.val();
-      $modalContainer.css('display', 'none');
-      $('.modal').css('display', 'none');
+      userEmail = $emailInput.val(); //store the email
+      sessionStorage.email = $emailInput.val(); //store the email again
+      $modalContainer.css('display', 'none'); //removes the modal Container
+      $('.modal').css('display', 'none'); //removes all elements with the modal class
     } else {
       // INVALID EMAIL
-      $('.login').effect( "shake" );
+      $('.login').effect( "shake" ); //puts a shake effect if the email is not valid
     }
   });
 
-  $logoutBtn.on('click', function(){
-    userEmail = '';
-    if (sessionStorage.email) {
+  $logoutBtn.on('click', function(){ //add click event to the Logout button
+    userEmail = ''; //clears the userEmail variable
+    if (sessionStorage.email) { //removes email from the sessionStorage
       sessionStorage.removeItem('email');
     }
-    $modalContainer.css('display', 'flex');
-    $('.login').css('display', 'flex');
+    $modalContainer.css('display', 'flex'); //allows the user to logout
+    $('.login').css('display', 'flex'); //displays the user to log back in, after logging out
   });
 
-  var allAlbumNames = [];
+  var allAlbumNames = []; //creates an empty array
   data.forEach(function(album) {
-    allAlbumNames.push(album.title);
+    allAlbumNames.push(album.title); //pushes the title of each album to the array
   });
 
   if(window.localStorage && localStorage.albums) { // If the user has albums saved.
-    var albumsArray = localStorage.getItem('albums');
-    albumsArray = JSON.parse(albumsArray);
+    var albumsArray = localStorage.getItem('albums'); //creates albumsArray from the localStorage if the user has created ablum
+    albumsArray = JSON.parse(albumsArray); //parses the localStorage for saved albums
     albumsArray.forEach(function(album) {
       if (allAlbumNames.indexOf(album.title) === -1) {
-        data.push(album);
+        data.push(album); //pushes the locally stored albums to the data array
       }
     });
   }
@@ -110,24 +112,24 @@ function renderHome() {
     // Set the data:
     $li.children('a').children('.image-container').attr('data-index', i);
 
-    $albumsGrid.append($li);
+    $albumsGrid.append($li); //appends all the album covers to the My Albums page
 
     // event Listener
     $li.children('a').children('.image-container').on('click', function(e){
       location.hash = 'album=' + $(this).data().index + '&';
       return false; // This prevents the anchor tag href to set the hash
-    });
+    }); //set hash location to the albums, when an image is clicked on the My Ablums page
 
-    $li.children('a').children('.album-meta').children('div').on('click', function(){
-      var albumIndex = $(this).closest('.album-meta').siblings('.image-container').data().index;
-      if ($(this).hasClass('liked')) {
+    $li.children('a').children('.album-meta').children('div').on('click', function(){ //looking a the likes on the My Ablums page
+      var albumIndex = $(this).closest('.album-meta').siblings('.image-container').data().index; //chooses the correct ablum to like
+      if ($(this).hasClass('liked')) { //if it's already liked, establishes that it's like
         $(this).removeClass('liked');
         data[albumIndex].likes--;
-      } else {
+      } else { //allows the user to like, if it hasn't been liked
         $(this).addClass('liked');
         data[albumIndex].likes++;
       }
-      $(this).children('p').text(data[albumIndex].likes);
+      $(this).children('p').text(data[albumIndex].likes); //displays the number of likes
     });
   });
 
