@@ -135,17 +135,18 @@ function renderHome() {
 
 
   var newAlbumHTML = '<li class="new-album"><div><i class="fa fa-plus" aria-hidden="true"></i><h3>New Album</h3></div></li>';
-  $albumsGrid.append($(newAlbumHTML));
+  //newAlbumHTML html tag for the '+ New Ablum' spot
+  $albumsGrid.append($(newAlbumHTML)); //appends the New Ablum to the My Album page
 
-  var $newAlbum = $('.new-album');
+  var $newAlbum = $('.new-album'); //variable for the '+ New Ablum' div
 
-  $newAlbum.on('click',function(){
+  $newAlbum.on('click',function(){ //functions for the click event on the '+ New Ablum' div
     var $albumName = $('.album-name');
     $albumName.val('');
     var $imageInput = $('#album-first-image');
     $imageInput.val('');
     $modalContainer.css('display', 'flex');
-    $('.create-album').css('display', 'flex');
+    $('.create-album').css('display', 'flex'); //makes new ablum pop-up appear
     var $submitBtn = $('#album-submit');
     $submitBtn.removeClass('valid');
 
@@ -155,7 +156,7 @@ function renderHome() {
       } else {
         $submitBtn.removeClass('valid');
       }
-    });
+    }); //checks to see if the album name is filled, then the "Create Album" button changes color
 
     $imageInput.on('keyup', function(){
       if ($albumName.val() !== '' && $imageInput.val() !== '') {
@@ -163,9 +164,9 @@ function renderHome() {
       } else {
         $submitBtn.removeClass('valid');
       }
-    });
-    $submitBtn.unbind('click');
-    $submitBtn.on('click', function(){
+    }); //checks to see if the image URL field, then the "Create Album" button changes color
+    $submitBtn.unbind('click'); //Remove a previously-attached event handler from the elements
+    $submitBtn.on('click', function(){ //added a click handler to the "Create Album" button
       if ($albumName.val() !== '' && $imageInput.val() !== '') {
         var imageURL = $imageInput.val();
         var albumName = $albumName.val();
@@ -174,39 +175,39 @@ function renderHome() {
 
         if(window.localStorage) {
           if (localStorage.albums) { // If albums have been stored
-            var albumAlreadyExists = false;
-            var allAlbumsArray = [];
+            var albumAlreadyExists = false; //setting variable to false
+            var allAlbumsArray = []; //starts with an empty array
             albumsArray.forEach(function(album){
               if (album.title === albumName) { albumAlreadyExists = true; }
-            });
-            if (!albumAlreadyExists) {
+            }); //setting the albumAlreadyExists variable for true if the title property equals the new album name the user submits
+            if (!albumAlreadyExists) { //if the album does not currently exists it creates a newAlbumObject
               var newAlbumObject = {
                 title: albumName,
                 likes: 0,
                 images: [imageURL]
               };
-              albumsArray.push(newAlbumObject);
-              localStorage.setItem('albums', JSON.stringify(albumsArray));
+              albumsArray.push(newAlbumObject); //pushes the newAlbumObject to the albumsArray
+              localStorage.setItem('albums', JSON.stringify(albumsArray)); //saves the albums to the localStorage array
               // Render home with the new album
               renderHome();
             } else {
-              throw new Error('This album already exists');
+              throw new Error('This album already exists'); //if the ablum name already exists, throws error
             }
-          } else {
+          } else { //because the no new ablums have been created, a new ablum can be created
             var albumObject = {
               title: albumName,
               likes: 0,
               images: [imageURL]
             };
             var albums = [albumObject];
-            localStorage.setItem('albums', JSON.stringify(albums));
+            localStorage.setItem('albums', JSON.stringify(albums)); //saves the albums to the localStorage array
           }
         }
         $modalContainer.css('display', 'none');
-        $('.modal').css('display', 'none');
+        $('.modal').css('display', 'none'); //hides the create album form
 
         var newLiHTML = '<li class="album"><a href="#"><div class="album-meta"><div><i class="fa fa-heart" aria-hidden="true"></i><i class="fa fa-heart-o" aria-hidden="true"></i><p class="likes">0</p></div><h5 class="Album title">Album Title</h5></div><div class="image-container"></div></a></li>';
-        var $newLi = $(newLiHTML);
+        var $newLi = $(newLiHTML); //creates a new variable for the newLiHTML variable
         // Set the BG image
         $newLi.children('a').children('.image-container').css('background-image', 'url(' + imageURL + ')');
         // Set the title
@@ -219,7 +220,7 @@ function renderHome() {
         $newLi.children('a').children('.image-container').on('click', function(e){
           location.hash = 'album=' + $(this).data().index + '&';
           return false; // This prevents the anchor tag href to set the hash
-        });
+        }); //creates a new Ablum before the My Ablums page gets refreshed
 
         $newLi.children('a').children('.album-meta').children('div').on('click', function(){
           var albumIndex = $(this).closest('.album-meta').siblings('.image-container').data().index;
@@ -231,19 +232,20 @@ function renderHome() {
             data[albumIndex].likes++;
           }
           $(this).children('p').text(data[albumIndex].likes);
-        });
+        }); //keeps tracks of the likes for the new ablum
 
-      } else {
+      } else { //the inputs are invalid when creating a new album
         $('#new-album-modal').effect('shake');
       }
-    });
+    }); //end of if(window.localStorage)
 
-    $('.dismiss').one('click', function(){
+    $('.dismiss').one('click', function(){ //closes the create new album pop-up
       $modalContainer.css('display', 'none');
       $('.modal').css('display', 'none');
     });
 
     $modalContainer.one('click', function(e){
+      //closes the create new album pop-up, when the user clicks off the screen
       if ($(e.target).hasClass('modal-container')) {
         $modalContainer.css('display', 'none');
         $('.modal').css('display', 'none');
